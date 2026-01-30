@@ -1,0 +1,12 @@
+README.md
+LICENSE
+.DS_Store
+
+{{ if ne .chezmoi.os "windows" }}
+Documents/
+{{ end }}
+
+{{ if eq .chezmoi.os "windows" }}
+.zshrc
+.bashrc
+{{ end }}

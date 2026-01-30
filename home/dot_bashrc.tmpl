@@ -1,0 +1,89 @@
+# If not running interactively, don't do anything
+case $- in
+    *i*) ;;
+      *) return;;
+esac
+
+# ── oh-my-posh prompt ─────────────────────────────────────────────
+if command -v oh-my-posh &> /dev/null; then
+    eval "$(oh-my-posh init bash --config ~/.config/oh-my-posh/themes/{{ .theme }}.omp.json)"
+fi
+
+# ── History ───────────────────────────────────────────────────────
+HISTCONTROL=ignoreboth:erasedups
+HISTSIZE=50000
+HISTFILESIZE=50000
+HISTIGNORE="&:ls:cd:exit:clear"
+shopt -s histappend
+
+# ── Shell options ─────────────────────────────────────────────────
+shopt -s checkwinsize
+shopt -s cdspell
+shopt -s dirspell 2>/dev/null
+shopt -s autocd 2>/dev/null
+shopt -s globstar 2>/dev/null
+
+# ── PATH ──────────────────────────────────────────────────────────
+pathadd() {
+    if [[ -d "$1" ]] && [[ ":$PATH:" != *":$1:"* ]]; then
+        PATH="$1:$PATH"
+    fi
+}
+
+pathadd "$HOME/.local/bin"
+pathadd "$HOME/bin"
+pathadd "$HOME/go/bin"
+{{- if eq .chezmoi.os "darwin" }}
+pathadd "/opt/homebrew/bin"
+pathadd "/opt/homebrew/sbin"
+{{- end }}
+
+# ── Aliases ───────────────────────────────────────────────────────
+# Navigation
+alias ..='cd ..'
+alias ...='cd ../..'
+alias ....='cd ../../..'
+
+# Listing
+{{- if eq .chezmoi.os "darwin" }}
+alias ls='ls -G'
+{{- else }}
+alias ls='ls --color=auto'
+{{- end }}
+alias ll='ls -lah'
+alias la='ls -A'
+alias l='ls -CF'
+
+# Safety
+alias rm='rm -i'
+alias cp='cp -i'
+alias mv='mv -i'
+
+# Git
+alias g='git'
+alias gs='git status'
+alias ga='git add'
+alias gc='git commit'
+alias gp='git push'
+alias gl='git log --oneline --graph --decorate'
+alias gd='git diff'
+alias gco='git checkout'
+alias gb='git branch'
+
+# Grep
+alias grep='grep --color=auto'
+alias fgrep='fgrep --color=auto'
+alias egrep='egrep --color=auto'
+
+# ── Functions ─────────────────────────────────────────────────────
+mkcd() { mkdir -p "$1" && cd "$1"; }
+
+# ── Completion ────────────────────────────────────────────────────
+if [[ -f /etc/bash_completion ]]; then
+    source /etc/bash_completion
+elif [[ -f /opt/homebrew/etc/bash_completion ]]; then
+    source /opt/homebrew/etc/bash_completion
+fi
+
+# ── Local overrides ──────────────────────────────────────────────
+[[ -f ~/.bashrc.local ]] && source ~/.bashrc.local

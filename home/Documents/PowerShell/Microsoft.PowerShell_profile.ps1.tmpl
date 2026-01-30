@@ -1,0 +1,44 @@
+# ── oh-my-posh prompt ─────────────────────────────────────────────
+if (Get-Command oh-my-posh -ErrorAction SilentlyContinue) {
+    oh-my-posh init pwsh --config "$env:USERPROFILE\.config\oh-my-posh\themes\{{ .theme }}.omp.json" | Invoke-Expression
+}
+
+# ── PSReadLine ────────────────────────────────────────────────────
+if (Get-Module -ListAvailable -Name PSReadLine) {
+    Set-PSReadLineOption -PredictionSource History
+    Set-PSReadLineOption -PredictionViewStyle ListView
+    Set-PSReadLineOption -EditMode Emacs
+    Set-PSReadLineKeyHandler -Key UpArrow -Function HistorySearchBackward
+    Set-PSReadLineKeyHandler -Key DownArrow -Function HistorySearchForward
+    Set-PSReadLineKeyHandler -Key Tab -Function MenuComplete
+}
+
+# ── Terminal Icons ────────────────────────────────────────────────
+if (Get-Module -ListAvailable -Name Terminal-Icons) {
+    Import-Module Terminal-Icons
+}
+
+# ── Aliases ───────────────────────────────────────────────────────
+Set-Alias -Name g -Value git
+Set-Alias -Name ll -Value Get-ChildItem
+Set-Alias -Name which -Value Get-Command
+
+function gs { git status }
+function ga { git add $args }
+function gc { git commit $args }
+function gp { git push $args }
+function gl { git log --oneline --graph --decorate }
+function gd { git diff $args }
+function gco { git checkout $args }
+function gb { git branch $args }
+
+# Navigation
+function .. { Set-Location .. }
+function ... { Set-Location ..\.. }
+
+# ── Functions ─────────────────────────────────────────────────────
+function mkcd { param($dir) New-Item -ItemType Directory -Path $dir -Force | Out-Null; Set-Location $dir }
+
+# ── Local overrides ──────────────────────────────────────────────
+$localProfile = Join-Path $env:USERPROFILE ".powershell.local.ps1"
+if (Test-Path $localProfile) { . $localProfile }
