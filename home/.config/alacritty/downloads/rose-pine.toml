@@ -1,0 +1,64 @@
+# Rose Pine for Alacritty
+# https://github.com/rose-pine/alacritty
+
+[colors.primary]
+background = '#191724'
+foreground = '#e0def4'
+
+[colors.cursor]
+text = '#191724'
+cursor = '#524f67'
+
+[colors.vi_mode_cursor]
+text = '#191724'
+cursor = '#524f67'
+
+[colors.selection]
+text = '#e0def4'
+background = '#44415a'
+
+[colors.search]
+matches = { foreground = '#191724', background = '#c5c3ce' }
+focused_match = { foreground = '#191724', background = '#6e6a86' }
+
+[colors.hints]
+start = { foreground = '#191724', background = '#c5c3ce' }
+end = { foreground = '#191724', background = '#6e6a86' }
+
+[colors.line_indicator]
+foreground = 'none'
+background = 'none'
+
+[colors.footer_bar]
+background = '#21202e'
+foreground = '#e0def4'
+
+[colors.normal]
+black = '#393552'
+red = '#eb6f92'
+green = '#9ccfd8'
+yellow = '#f6c177'
+blue = '#31748f'
+magenta = '#c4a7e7'
+cyan = '#ebbcba'
+white = '#e0def4'
+
+[colors.bright]
+black = '#817c9c'
+red = '#eb6f92'
+green = '#9ccfd8'
+yellow = '#f6c177'
+blue = '#31748f'
+magenta = '#c4a7e7'
+cyan = '#ebbcba'
+white = '#e0def4'
+
+[colors.dim]
+black = '#393552'
+red = '#eb6f92'
+green = '#9ccfd8'
+yellow = '#f6c177'
+blue = '#31748f'
+magenta = '#c4a7e7'
+cyan = '#ebbcba'
+white = '#e0def4'

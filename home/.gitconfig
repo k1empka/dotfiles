@@ -1,0 +1,76 @@
+# Git Configuration
+# Update user.name and user.email with your details
+
+[user]
+    # name = Your Name
+    # email = your@email.com
+
+[init]
+    defaultBranch = main
+
+[core]
+    editor = nvim
+    autocrlf = input
+    pager = less -FRX
+
+[pull]
+    rebase = true
+
+[push]
+    default = current
+    autoSetupRemote = true
+
+[fetch]
+    prune = true
+
+[merge]
+    conflictstyle = diff3
+
+[diff]
+    colorMoved = default
+
+[color]
+    ui = auto
+
+[alias]
+    # Status
+    st = status
+    ss = status -s
+
+    # Branching
+    br = branch
+    co = checkout
+    cb = checkout -b
+    sw = switch
+    sc = switch -c
+
+    # Commits
+    ci = commit
+    cm = commit -m
+    ca = commit --amend
+    can = commit --amend --no-edit
+
+    # Logging
+    lg = log --oneline --graph --decorate -20
+    lga = log --oneline --graph --decorate --all -20
+    ll = log --pretty=format:'%C(yellow)%h%Creset %s %C(cyan)(%cr)%Creset %C(blue)<%an>%Creset' -20
+    hist = log --pretty=format:'%h %ad | %s%d [%an]' --graph --date=short
+
+    # Diff
+    df = diff
+    dfs = diff --staged
+    dfc = diff --cached
+
+    # Stash
+    sl = stash list
+    sp = stash pop
+    ss = stash save
+
+    # Reset
+    unstage = reset HEAD --
+    undo = reset --soft HEAD~1
+
+    # Utility
+    aliases = config --get-regexp alias
+    last = log -1 HEAD --stat
+    contributors = shortlog -sn
