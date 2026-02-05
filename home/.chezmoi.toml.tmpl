@@ -1,6 +1,6 @@
 {{- $name := promptStringOnce . "name" "Your full name" -}}
 {{- $email := promptStringOnce . "email" "Your email address" -}}
-{{- $theme := promptChoiceOnce . "theme" "Choose theme" (list "rose-pine" "catppuccin" "tokyo-night") -}}
+{{- $theme := promptStringOnce . "theme" "Theme (rose-pine, catppuccin, tokyo-night)" "rose-pine" -}}
 
 [data]
     name = {{ $name | quote }}
