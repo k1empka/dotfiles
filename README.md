@@ -15,15 +15,15 @@ Cross-platform dotfiles managed with [chezmoi](https://www.chezmoi.io/), themed 
 ### macOS / Linux
 
 ```sh
-curl -fsLS https://raw.githubusercontent.com/klempka/dotfiles/main/scripts/bootstrap.sh | sh
+curl -fsLS https://raw.githubusercontent.com/k1empka/dotfiles/refs/heads/main/scripts/bootstrap.sh | sh
 ```
 
 ### Windows (PowerShell)
-
+.
 ```powershell
 winget install twpayne.chezmoi
 winget install JanDeDobbeleer.OhMyPosh
-chezmoi init --apply klempka
+chezmoi init --apply k1empka
 ```
 
 ## What's Included

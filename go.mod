@@ -1,4 +1,4 @@
-module github.com/klempka/dotfiles
+module github.com/k1empka/dotfiles
 
 go 1.24.7
 
