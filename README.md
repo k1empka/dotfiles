@@ -49,9 +49,9 @@ make build
 ./bin/dotfiles-tui
 ```
 
-Tabs: Overview, Shell, Git, Themes, Neovim, Alacritty, Chezmoi, Install
+Tabs: Overview, Shell, Git, Themes, Neovim, Alacritty, Chezmoi, Install, VS Code
 
-The **Install** tab detects which applications are installed and supports one-click installation via Homebrew (macOS) or apt (Linux).
+The **Install** tab detects which applications are installed and supports one-click installation via Homebrew (macOS) or apt (Linux). The **VS Code** tab provides a split-pane browser for viewing managed VS Code configuration files.
 
 ## Configuration
 
@@ -99,6 +99,10 @@ dotfiles/
 │   ├── dot_config/
 │   │   └── oh-my-posh/
 │   │       └── themes/     # oh-my-posh theme files
+│   ├── private_Library/    # VS Code config (macOS only)
+│   │   └── .../Code/User/
+│   │       ├── settings.json
+│   │       └── extensions.txt
 │   └── Documents/PowerShell/
 │       └── Microsoft.PowerShell_profile.ps1.tmpl
 ├── scripts/
