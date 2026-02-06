@@ -36,6 +36,7 @@ func NewApp(client *chezmoi.Client, inst *installer.Installer) App {
 		panel.NewAlacritty(),
 		panel.NewChezmoi(),
 		panel.NewInstall(),
+		panel.NewVSCode(),
 	}
 	titles := make([]string, len(panels))
 	for i, p := range panels {
@@ -61,6 +62,7 @@ func (a App) Init() tea.Cmd {
 		a.loadThemeColors("catppuccin"),
 		a.loadThemeColors("tokyo-night"),
 		a.checkInstallStatus(),
+		a.loadVSCodeFiles(),
 	)
 }
 
@@ -121,6 +123,9 @@ func (a App) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		case key.Matches(msg, globalKeys.Tab8):
 			a.tabs.setActive(7)
 			return a, nil
+		case key.Matches(msg, globalKeys.Tab9):
+			a.tabs.setActive(8)
+			return a, nil
 		}
 
 	case tea.WindowSizeMsg:
@@ -172,6 +177,9 @@ func (a App) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	case panel.NvimFileSelectMsg:
 		return a, a.loadNvimFileContent(msg.Path)
 
+	case panel.VSCodeFileSelectMsg:
+		return a, a.loadVSCodeFileContent(msg.Path)
+
 	// Panel -> App messages that require installer operations.
 	case panel.InstallRequestMsg:
 		return a, a.installApp(msg.App)
@@ -183,7 +191,8 @@ func (a App) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	case panel.ShellContentMsg, panel.GitContentMsg, panel.AlacrittyContentMsg,
 		panel.NvimFilesMsg, panel.NvimContentMsg, panel.ThemeColorsMsg,
 		panel.ChezmoiOutputMsg, panel.ConfigUpdatedMsg,
-		panel.InstallStatusMsg, panel.InstallResultMsg:
+		panel.InstallStatusMsg, panel.InstallResultMsg,
+		panel.VSCodeFilesMsg, panel.VSCodeContentMsg:
 		for i, p := range a.panels {
 			updated, cmd := p.Update(msg)
 			a.panels[i] = updated.(panel.Panel)
@@ -385,6 +394,32 @@ func (a App) installApp(app installer.App) tea.Cmd {
 		}
 		err := a.installer.Install(app)
 		return panel.InstallResultMsg{App: app, Err: err}
+	}
+}
+
+func (a App) loadVSCodeFiles() tea.Cmd {
+	return func() tea.Msg {
+		if a.client == nil {
+			return nil
+		}
+		files, err := a.client.VSCodeFiles()
+		if err != nil {
+			return panel.VSCodeFilesMsg{Files: []string{}}
+		}
+		return panel.VSCodeFilesMsg{Files: files}
+	}
+}
+
+func (a App) loadVSCodeFileContent(path string) tea.Cmd {
+	return func() tea.Msg {
+		if a.client == nil {
+			return nil
+		}
+		content, err := a.client.VSCodeFileContent(path)
+		if err != nil {
+			return panel.VSCodeContentMsg{Path: path, Content: fmt.Sprintf("Error: %v", err)}
+		}
+		return panel.VSCodeContentMsg{Path: path, Content: content}
 	}
 }
 

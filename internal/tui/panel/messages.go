@@ -72,6 +72,22 @@ type RunChezmoiMsg struct {
 	Mode string // "status", "diff", "apply"
 }
 
+// VSCodeFilesMsg carries the list of VS Code config files.
+type VSCodeFilesMsg struct {
+	Files []string
+}
+
+// VSCodeContentMsg carries VS Code file content.
+type VSCodeContentMsg struct {
+	Path    string
+	Content string
+}
+
+// VSCodeFileSelectMsg requests a VS Code file content load from the app.
+type VSCodeFileSelectMsg struct {
+	Path string
+}
+
 // InstallStatusMsg carries the check results for all apps.
 type InstallStatusMsg struct {
 	Statuses []installer.AppStatus

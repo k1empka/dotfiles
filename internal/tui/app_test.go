@@ -8,10 +8,10 @@ import (
 	"github.com/k1empka/dotfiles/internal/tui/panel"
 )
 
-func TestNewApp_HasEightPanels(t *testing.T) {
+func TestNewApp_HasNinePanels(t *testing.T) {
 	app := NewApp(nil, nil)
-	if len(app.panels) != 8 {
-		t.Errorf("expected 8 panels, got %d", len(app.panels))
+	if len(app.panels) != 9 {
+		t.Errorf("expected 9 panels, got %d", len(app.panels))
 	}
 }
 
@@ -33,6 +33,7 @@ func TestApp_TabSwitching(t *testing.T) {
 		{"tab 6", "6", 5},
 		{"tab 7", "7", 6},
 		{"tab 8", "8", 7},
+		{"tab 9", "9", 8},
 	}
 
 	for _, tt := range tests {
@@ -68,8 +69,8 @@ func TestApp_TabPrev(t *testing.T) {
 	msg := tea.KeyMsg{Type: tea.KeyShiftTab}
 	model, _ := app.Update(msg)
 	app = model.(App)
-	if app.tabs.active != 7 {
-		t.Errorf("expected tab 7 after Shift+Tab from 0, got %d", app.tabs.active)
+	if app.tabs.active != 8 {
+		t.Errorf("expected tab 8 after Shift+Tab from 0, got %d", app.tabs.active)
 	}
 }
 
@@ -151,7 +152,7 @@ func TestApp_ViewWithoutSize(t *testing.T) {
 
 func TestApp_PanelTitles(t *testing.T) {
 	app := NewApp(nil, nil)
-	expected := []string{"Overview", "Shell", "Git", "Themes", "Neovim", "Alacritty", "Chezmoi", "Install"}
+	expected := []string{"Overview", "Shell", "Git", "Themes", "Neovim", "Alacritty", "Chezmoi", "Install", "VS Code"}
 	for i, p := range app.panels {
 		if p.Title() != expected[i] {
 			t.Errorf("panel %d: expected title %q, got %q", i, expected[i], p.Title())
@@ -221,7 +222,7 @@ func TestApp_ViewEachTab(t *testing.T) {
 	model, _ := app.Update(tea.WindowSizeMsg{Width: 120, Height: 40})
 	app = model.(App)
 
-	for i := range 8 {
+	for i := range 9 {
 		app.tabs.setActive(i)
 		view := app.View()
 		if view == "" {
@@ -320,6 +321,29 @@ func TestApp_InstallStatusBroadcast(t *testing.T) {
 	msg := panel.InstallStatusMsg{Statuses: []installer.AppStatus{
 		{App: installer.App{Name: "Neovim", BinName: "nvim"}, Status: installer.StatusInstalled},
 	}}
+	model, _ = app.Update(msg)
+	app = model.(App)
+	// Verify no panic during broadcast.
+	if app.width != 120 {
+		t.Error("expected width to remain 120")
+	}
+}
+
+func TestApp_VSCodeFileSelect(t *testing.T) {
+	app := NewApp(nil, nil)
+	msg := panel.VSCodeFileSelectMsg{Path: "settings.json"}
+	_, cmd := app.Update(msg)
+	if cmd == nil {
+		t.Error("expected command for VS Code file load")
+	}
+}
+
+func TestApp_VSCodeFilesBroadcast(t *testing.T) {
+	app := NewApp(nil, nil)
+	model, _ := app.Update(tea.WindowSizeMsg{Width: 120, Height: 40})
+	app = model.(App)
+
+	msg := panel.VSCodeFilesMsg{Files: []string{"settings.json", "extensions.txt"}}
 	model, _ = app.Update(msg)
 	app = model.(App)
 	// Verify no panic during broadcast.

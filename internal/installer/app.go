@@ -18,5 +18,6 @@ func Apps() []App {
 		{Name: "Bash", BinName: "bash", BrewPkg: "bash", AptPkg: "bash"},
 		{Name: "Oh My Posh", BinName: "oh-my-posh", BrewPkg: "jandedobbeleer/oh-my-posh/oh-my-posh", AptPkg: ""},
 		{Name: "Chezmoi", BinName: "chezmoi", BrewPkg: "chezmoi", AptPkg: ""},
+		{Name: "VS Code", BinName: "code", BrewPkg: "--cask visual-studio-code", AptPkg: "code"},
 	}
 }

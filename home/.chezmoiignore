@@ -6,6 +6,10 @@ LICENSE
 Documents/
 {{ end }}
 
+{{ if ne .chezmoi.os "darwin" }}
+private_Library/
+{{ end }}
+
 {{ if eq .chezmoi.os "windows" }}
 .zshrc
 .bashrc

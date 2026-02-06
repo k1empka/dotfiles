@@ -115,8 +115,8 @@ func TestCheckAll(t *testing.T) {
 	if installed != 2 {
 		t.Errorf("expected 2 installed, got %d", installed)
 	}
-	if missing != 5 {
-		t.Errorf("expected 5 missing, got %d", missing)
+	if missing != 6 {
+		t.Errorf("expected 6 missing, got %d", missing)
 	}
 }
 
@@ -253,6 +253,36 @@ func TestInstall_UnsupportedOS(t *testing.T) {
 	}
 	if !strings.Contains(err.Error(), "unsupported OS") {
 		t.Errorf("expected 'unsupported OS' error, got: %v", err)
+	}
+}
+
+func TestInstall_Brew_Cask_Success(t *testing.T) {
+	runner := &mockRunner{
+		lookPath: map[string]error{"brew": nil},
+		runs: map[string]runResult{
+			"brew install --cask visual-studio-code": {output: []byte("installed")},
+		},
+	}
+	inst := NewInstaller(runner, "darwin")
+
+	err := inst.Install(App{Name: "VS Code", BinName: "code", BrewPkg: "--cask visual-studio-code"})
+
+	if err != nil {
+		t.Errorf("unexpected error: %v", err)
+	}
+}
+
+func TestBrewArgs_Regular(t *testing.T) {
+	args := brewArgs("neovim")
+	if len(args) != 2 || args[0] != "install" || args[1] != "neovim" {
+		t.Errorf("expected [install neovim], got %v", args)
+	}
+}
+
+func TestBrewArgs_Cask(t *testing.T) {
+	args := brewArgs("--cask visual-studio-code")
+	if len(args) != 3 || args[0] != "install" || args[1] != "--cask" || args[2] != "visual-studio-code" {
+		t.Errorf("expected [install --cask visual-studio-code], got %v", args)
 	}
 }
 

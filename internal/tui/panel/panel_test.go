@@ -467,6 +467,103 @@ func TestAlacritty_ShortHelp(t *testing.T) {
 	}
 }
 
+func TestVSCode_Title(t *testing.T) {
+	v := NewVSCode()
+	if v.Title() != "VS Code" {
+		t.Errorf("expected VS Code, got %s", v.Title())
+	}
+}
+
+func TestVSCode_ShortHelp(t *testing.T) {
+	v := NewVSCode()
+	help := v.ShortHelp()
+	if !strContains(help, "navigate") {
+		t.Error("expected navigate in help")
+	}
+	v.focusContent = true
+	help = v.ShortHelp()
+	if !strContains(help, "file list") {
+		t.Error("expected file list in content-focus help")
+	}
+}
+
+func TestVSCode_FileList(t *testing.T) {
+	v := NewVSCode()
+	model, cmd := v.Update(VSCodeFilesMsg{Files: []string{"settings.json", "extensions.txt"}})
+	v = model.(*VSCode)
+	if len(v.files) != 2 {
+		t.Errorf("expected 2 files, got %d", len(v.files))
+	}
+	if cmd == nil {
+		t.Error("expected command to select first file")
+	}
+}
+
+func TestVSCode_Navigation(t *testing.T) {
+	v := NewVSCode()
+	v.files = []string{"settings.json", "extensions.txt"}
+
+	// Move down.
+	model, cmd := v.Update(tea.KeyMsg{Type: tea.KeyRunes, Runes: []rune("j")})
+	v = model.(*VSCode)
+	if v.selected != 1 {
+		t.Errorf("expected selected 1, got %d", v.selected)
+	}
+	if cmd == nil {
+		t.Error("expected file select command")
+	}
+
+	// Move up.
+	model, _ = v.Update(tea.KeyMsg{Type: tea.KeyRunes, Runes: []rune("k")})
+	v = model.(*VSCode)
+	if v.selected != 0 {
+		t.Errorf("expected selected 0, got %d", v.selected)
+	}
+}
+
+func TestVSCode_FocusSwitch(t *testing.T) {
+	v := NewVSCode()
+	v.files = []string{"settings.json"}
+	model, _ := v.Update(SetSizeMsg{Width: 100, Height: 30})
+	v = model.(*VSCode)
+
+	// Focus content.
+	model, _ = v.Update(tea.KeyMsg{Type: tea.KeyRunes, Runes: []rune("l")})
+	v = model.(*VSCode)
+	if !v.focusContent {
+		t.Error("expected content focused")
+	}
+
+	// Focus back to list.
+	model, _ = v.Update(tea.KeyMsg{Type: tea.KeyRunes, Runes: []rune("h")})
+	v = model.(*VSCode)
+	if v.focusContent {
+		t.Error("expected list focused")
+	}
+}
+
+func TestVSCode_View(t *testing.T) {
+	v := NewVSCode()
+	model, _ := v.Update(SetSizeMsg{Width: 100, Height: 30})
+	v = model.(*VSCode)
+	model, _ = v.Update(VSCodeFilesMsg{Files: []string{"settings.json", "extensions.txt"}})
+	v = model.(*VSCode)
+	model, _ = v.Update(VSCodeContentMsg{Path: "settings.json", Content: `{"editor.fontSize": 14}`})
+	v = model.(*VSCode)
+	view := v.View()
+	if !strContains(view, "settings.json") {
+		t.Error("expected settings.json in view")
+	}
+}
+
+func TestVSCode_ViewEmpty(t *testing.T) {
+	v := NewVSCode()
+	view := v.View()
+	if !strContains(view, "Loading") {
+		t.Error("expected Loading message")
+	}
+}
+
 func TestAllPanels_ImplementInterface(t *testing.T) {
 	panels := []Panel{
 		NewOverview(),
@@ -476,6 +573,8 @@ func TestAllPanels_ImplementInterface(t *testing.T) {
 		NewNeovim(),
 		NewAlacritty(),
 		NewChezmoi(),
+		NewInstall(),
+		NewVSCode(),
 	}
 	for _, p := range panels {
 		if p.Title() == "" {

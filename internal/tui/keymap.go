@@ -15,6 +15,7 @@ type globalKeyMap struct {
 	Tab6     key.Binding
 	Tab7     key.Binding
 	Tab8     key.Binding
+	Tab9     key.Binding
 	Help     key.Binding
 	Up       key.Binding
 	Down     key.Binding
@@ -49,6 +50,7 @@ var globalKeys = globalKeyMap{
 	Tab6: key.NewBinding(key.WithKeys("6")),
 	Tab7: key.NewBinding(key.WithKeys("7")),
 	Tab8: key.NewBinding(key.WithKeys("8")),
+	Tab9: key.NewBinding(key.WithKeys("9")),
 	Help: key.NewBinding(
 		key.WithKeys("?"),
 		key.WithHelp("?", "help"),

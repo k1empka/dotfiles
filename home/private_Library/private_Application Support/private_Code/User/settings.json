@@ -1,0 +1,73 @@
+{
+    "[python]": {
+        "diffEditor.ignoreTrimWhitespace": false,
+        "editor.formatOnType": true,
+        "editor.wordBasedSuggestions": "off"
+    },
+    "cmake.options.statusBarVisibility": "icon",
+    "cmake.pinnedCommands": [
+        "workbench.action.tasks.configureTaskRunner",
+        "workbench.action.tasks.runTask"
+    ],
+    "cmake.showOptionsMovedNotification": false,
+    "makefile.configureOnOpen": true,
+    "window.nativeTabs": true,
+    "tabnine.experimentalAutoImports": true,
+    "editor.fontSize": 14,
+    "workbench.iconTheme": "vs-nomo-dark",
+    "python.createEnvironment.trigger": "off",
+    "terminal.integrated.inheritEnv": false,
+    "debug.onTaskErrors": "showErrors",
+    "python.autoComplete.extraPaths": [],
+    "github.copilot.nextEditSuggestions.enabled": true,
+    "github.copilot.enable": {
+        "*": true,
+        "plaintext": false,
+        "markdown": false,
+        "scminput": false
+    },
+    "logFileHighlighter.customPatterns": [
+        {
+            "pattern": "\\b(ERROR|CRITICAL|FATAL)\\b",
+            "foreground": "#ff0000",
+            "fontWeight": "bold"
+        },
+        {
+            "pattern": "\\b(WARN|WARNING)\\b",
+            "foreground": "#ffa500",
+            "fontWeight": "bold"
+        },
+        {
+            "pattern": "\\b(INFO)\\b",
+            "foreground": "#00ff00"
+        },
+        {
+            "pattern": "\\b(DEBUG)\\b",
+            "foreground": "#808080"
+        },
+        {
+            "pattern": "\\d{4}-\\d{2}-\\d{2}\\s\\d{2}:\\d{2}:\\d{2}",
+            "foreground": "#87ceeb"
+        },
+        {
+            "pattern": "dataset_id=\"\\d+\"",
+            "foreground": "#ffff00"
+        },
+        {
+            "pattern": "msg=\"[^\"]*\"",
+            "foreground": "#98fb98"
+        },
+        {
+            "pattern": "workers=\\[[^\\]]*\\]",
+            "foreground": "#dda0dd"
+        }
+    ],
+    "go.toolsManagement.autoUpdate": true,
+    "claudeCode.preferredLocation": "panel",
+    "docker.extension.enableComposeLanguageServer": false,
+    "[json]": {
+        "editor.defaultFormatter": "esbenp.prettier-vscode"
+    },
+    "gitlens.ai.model": "vscode",
+    "gitlens.ai.vscode.model": "copilot:gpt-4.1"
+}

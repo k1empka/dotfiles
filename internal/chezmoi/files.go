@@ -90,6 +90,16 @@ func (c *Client) AlacrittyConfig() (string, error) {
 	return c.ReadSourceFile("dot_config/alacritty/alacritty.toml.tmpl")
 }
 
+// VSCodeFiles returns the list of VS Code config files.
+func (c *Client) VSCodeFiles() ([]string, error) {
+	return c.ListSourceFiles(filepath.Join("private_Library", "private_Application Support", "private_Code", "User"))
+}
+
+// VSCodeFileContent returns the content of a specific VS Code config file.
+func (c *Client) VSCodeFileContent(relPath string) (string, error) {
+	return c.ReadSourceFile(filepath.Join("private_Library", "private_Application Support", "private_Code", "User", relPath))
+}
+
 // ThemeNames returns available OMP theme names by scanning the themes directory.
 func (c *Client) ThemeNames() ([]string, error) {
 	srcPath, err := c.SourcePath()

@@ -118,6 +118,15 @@ func (inst *Installer) Install(app App) error {
 	}
 }
 
+// brewArgs returns the arguments for a brew install command.
+// Packages prefixed with "--cask " are installed as casks.
+func brewArgs(pkg string) []string {
+	if name, ok := strings.CutPrefix(pkg, "--cask "); ok {
+		return []string{"install", "--cask", name}
+	}
+	return []string{"install", pkg}
+}
+
 func (inst *Installer) installBrew(app App) error {
 	if app.BrewPkg == "" {
 		return fmt.Errorf("no homebrew package defined for %s", app.Name)
@@ -126,9 +135,10 @@ func (inst *Installer) installBrew(app App) error {
 	if err != nil {
 		return fmt.Errorf("homebrew not found in PATH: %w", err)
 	}
-	out, err := inst.runner.Run("brew", "install", app.BrewPkg)
+	args := brewArgs(app.BrewPkg)
+	out, err := inst.runner.Run("brew", args...)
 	if err != nil {
-		return fmt.Errorf("brew install %s: %s: %w", app.BrewPkg, strings.TrimSpace(string(out)), err)
+		return fmt.Errorf("brew %s: %s: %w", strings.Join(args, " "), strings.TrimSpace(string(out)), err)
 	}
 	return nil
 }

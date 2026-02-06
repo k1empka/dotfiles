@@ -110,6 +110,62 @@ func TestAlacrittyConfig_ReadFile(t *testing.T) {
 	}
 }
 
+func TestVSCodeFiles_ListDir(t *testing.T) {
+	dir := t.TempDir()
+	vsDir := filepath.Join(dir, "private_Library", "private_Application Support", "private_Code", "User")
+	if err := os.MkdirAll(vsDir, 0755); err != nil {
+		t.Fatal(err)
+	}
+
+	for _, name := range []string{"settings.json", "extensions.txt"} {
+		if err := os.WriteFile(filepath.Join(vsDir, name), []byte("test"), 0644); err != nil {
+			t.Fatal(err)
+		}
+	}
+
+	var files []string
+	err := filepath.Walk(vsDir, func(path string, info os.FileInfo, err error) error {
+		if err != nil {
+			return err
+		}
+		if info.IsDir() {
+			return nil
+		}
+		rel, _ := filepath.Rel(vsDir, path)
+		files = append(files, rel)
+		return nil
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if len(files) != 2 {
+		t.Errorf("expected 2 files, got %d: %v", len(files), files)
+	}
+}
+
+func TestVSCodeFileContent_ReadFile(t *testing.T) {
+	dir := t.TempDir()
+	vsDir := filepath.Join(dir, "private_Library", "private_Application Support", "private_Code", "User")
+	if err := os.MkdirAll(vsDir, 0755); err != nil {
+		t.Fatal(err)
+	}
+
+	content := `{"editor.fontSize": 14}`
+	testFile := filepath.Join(vsDir, "settings.json")
+	if err := os.WriteFile(testFile, []byte(content), 0644); err != nil {
+		t.Fatal(err)
+	}
+
+	got, err := os.ReadFile(testFile)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if string(got) != content {
+		t.Errorf("expected %q, got %q", content, got)
+	}
+}
+
 func cutSuffix(s, suffix string) (string, bool) {
 	if len(s) >= len(suffix) && s[len(s)-len(suffix):] == suffix {
 		return s[:len(s)-len(suffix)], true
