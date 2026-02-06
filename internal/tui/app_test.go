@@ -4,18 +4,19 @@ import (
 	"testing"
 
 	tea "github.com/charmbracelet/bubbletea"
+	"github.com/k1empka/dotfiles/internal/installer"
 	"github.com/k1empka/dotfiles/internal/tui/panel"
 )
 
-func TestNewApp_HasSevenPanels(t *testing.T) {
-	app := NewApp(nil)
-	if len(app.panels) != 7 {
-		t.Errorf("expected 7 panels, got %d", len(app.panels))
+func TestNewApp_HasEightPanels(t *testing.T) {
+	app := NewApp(nil, nil)
+	if len(app.panels) != 8 {
+		t.Errorf("expected 8 panels, got %d", len(app.panels))
 	}
 }
 
 func TestApp_TabSwitching(t *testing.T) {
-	app := NewApp(nil)
+	app := NewApp(nil, nil)
 	app.width = 120
 	app.height = 40
 
@@ -31,6 +32,7 @@ func TestApp_TabSwitching(t *testing.T) {
 		{"tab 5", "5", 4},
 		{"tab 6", "6", 5},
 		{"tab 7", "7", 6},
+		{"tab 8", "8", 7},
 	}
 
 	for _, tt := range tests {
@@ -46,7 +48,7 @@ func TestApp_TabSwitching(t *testing.T) {
 }
 
 func TestApp_TabNext(t *testing.T) {
-	app := NewApp(nil)
+	app := NewApp(nil, nil)
 	app.width = 120
 	app.height = 40
 
@@ -59,20 +61,20 @@ func TestApp_TabNext(t *testing.T) {
 }
 
 func TestApp_TabPrev(t *testing.T) {
-	app := NewApp(nil)
+	app := NewApp(nil, nil)
 	app.width = 120
 	app.height = 40
 
 	msg := tea.KeyMsg{Type: tea.KeyShiftTab}
 	model, _ := app.Update(msg)
 	app = model.(App)
-	if app.tabs.active != 6 {
-		t.Errorf("expected tab 6 after Shift+Tab from 0, got %d", app.tabs.active)
+	if app.tabs.active != 7 {
+		t.Errorf("expected tab 7 after Shift+Tab from 0, got %d", app.tabs.active)
 	}
 }
 
 func TestApp_Quit(t *testing.T) {
-	app := NewApp(nil)
+	app := NewApp(nil, nil)
 	app.width = 120
 	app.height = 40
 
@@ -84,7 +86,7 @@ func TestApp_Quit(t *testing.T) {
 }
 
 func TestApp_WindowResize(t *testing.T) {
-	app := NewApp(nil)
+	app := NewApp(nil, nil)
 	msg := tea.WindowSizeMsg{Width: 100, Height: 50}
 	model, _ := app.Update(msg)
 	app = model.(App)
@@ -94,7 +96,7 @@ func TestApp_WindowResize(t *testing.T) {
 }
 
 func TestApp_ConfigLoaded(t *testing.T) {
-	app := NewApp(nil)
+	app := NewApp(nil, nil)
 	app.width = 120
 	app.height = 40
 
@@ -120,7 +122,7 @@ func TestApp_ConfigLoaded(t *testing.T) {
 }
 
 func TestApp_HelpToggle(t *testing.T) {
-	app := NewApp(nil)
+	app := NewApp(nil, nil)
 	app.width = 120
 	app.height = 40
 
@@ -140,7 +142,7 @@ func TestApp_HelpToggle(t *testing.T) {
 }
 
 func TestApp_ViewWithoutSize(t *testing.T) {
-	app := NewApp(nil)
+	app := NewApp(nil, nil)
 	view := app.View()
 	if view != "Loading..." {
 		t.Errorf("expected Loading..., got %q", view)
@@ -148,8 +150,8 @@ func TestApp_ViewWithoutSize(t *testing.T) {
 }
 
 func TestApp_PanelTitles(t *testing.T) {
-	app := NewApp(nil)
-	expected := []string{"Overview", "Shell", "Git", "Themes", "Neovim", "Alacritty", "Chezmoi"}
+	app := NewApp(nil, nil)
+	expected := []string{"Overview", "Shell", "Git", "Themes", "Neovim", "Alacritty", "Chezmoi", "Install"}
 	for i, p := range app.panels {
 		if p.Title() != expected[i] {
 			t.Errorf("panel %d: expected title %q, got %q", i, expected[i], p.Title())
@@ -158,7 +160,7 @@ func TestApp_PanelTitles(t *testing.T) {
 }
 
 func TestApp_ErrorHandling(t *testing.T) {
-	app := NewApp(nil)
+	app := NewApp(nil, nil)
 	app.width = 120
 	app.height = 40
 
@@ -171,7 +173,7 @@ func TestApp_ErrorHandling(t *testing.T) {
 }
 
 func TestApp_EditSubmit(t *testing.T) {
-	app := NewApp(nil)
+	app := NewApp(nil, nil)
 	app.width = 120
 	app.height = 40
 
@@ -189,7 +191,7 @@ type testError struct{}
 func (e *testError) Error() string { return "test error" }
 
 func TestApp_ViewWithSize(t *testing.T) {
-	app := NewApp(nil)
+	app := NewApp(nil, nil)
 	model, _ := app.Update(tea.WindowSizeMsg{Width: 120, Height: 40})
 	app = model.(App)
 	view := app.View()
@@ -202,7 +204,7 @@ func TestApp_ViewWithSize(t *testing.T) {
 }
 
 func TestApp_ViewWithHelp(t *testing.T) {
-	app := NewApp(nil)
+	app := NewApp(nil, nil)
 	app.width = 120
 	app.height = 40
 	app.help.SetSize(120, 40)
@@ -215,11 +217,11 @@ func TestApp_ViewWithHelp(t *testing.T) {
 }
 
 func TestApp_ViewEachTab(t *testing.T) {
-	app := NewApp(nil)
+	app := NewApp(nil, nil)
 	model, _ := app.Update(tea.WindowSizeMsg{Width: 120, Height: 40})
 	app = model.(App)
 
-	for i := range 7 {
+	for i := range 8 {
 		app.tabs.setActive(i)
 		view := app.View()
 		if view == "" {
@@ -229,7 +231,7 @@ func TestApp_ViewEachTab(t *testing.T) {
 }
 
 func TestApp_RunChezmoiMsg(t *testing.T) {
-	app := NewApp(nil)
+	app := NewApp(nil, nil)
 	app.width = 120
 	app.height = 40
 
@@ -241,7 +243,7 @@ func TestApp_RunChezmoiMsg(t *testing.T) {
 }
 
 func TestApp_ThemeApply(t *testing.T) {
-	app := NewApp(nil)
+	app := NewApp(nil, nil)
 	app.width = 120
 	app.height = 40
 
@@ -253,7 +255,7 @@ func TestApp_ThemeApply(t *testing.T) {
 }
 
 func TestApp_BroadcastMessages(t *testing.T) {
-	app := NewApp(nil)
+	app := NewApp(nil, nil)
 	model, _ := app.Update(tea.WindowSizeMsg{Width: 120, Height: 40})
 	app = model.(App)
 
@@ -278,11 +280,51 @@ func TestApp_BroadcastMessages(t *testing.T) {
 }
 
 func TestApp_NvimFileSelect(t *testing.T) {
-	app := NewApp(nil)
+	app := NewApp(nil, nil)
 	msg := panel.NvimFileSelectMsg{Path: "init.lua"}
 	_, cmd := app.Update(msg)
 	if cmd == nil {
 		t.Error("expected command for file load")
+	}
+}
+
+func TestApp_CheckInstallMsg(t *testing.T) {
+	app := NewApp(nil, nil)
+	app.width = 120
+	app.height = 40
+
+	msg := panel.CheckInstallMsg{}
+	_, cmd := app.Update(msg)
+	if cmd == nil {
+		t.Error("expected command for install check")
+	}
+}
+
+func TestApp_InstallRequestMsg(t *testing.T) {
+	app := NewApp(nil, nil)
+	app.width = 120
+	app.height = 40
+
+	msg := panel.InstallRequestMsg{App: installer.App{Name: "Neovim", BinName: "nvim"}}
+	_, cmd := app.Update(msg)
+	if cmd == nil {
+		t.Error("expected command for app install")
+	}
+}
+
+func TestApp_InstallStatusBroadcast(t *testing.T) {
+	app := NewApp(nil, nil)
+	model, _ := app.Update(tea.WindowSizeMsg{Width: 120, Height: 40})
+	app = model.(App)
+
+	msg := panel.InstallStatusMsg{Statuses: []installer.AppStatus{
+		{App: installer.App{Name: "Neovim", BinName: "nvim"}, Status: installer.StatusInstalled},
+	}}
+	model, _ = app.Update(msg)
+	app = model.(App)
+	// Verify no panic during broadcast.
+	if app.width != 120 {
+		t.Error("expected width to remain 120")
 	}
 }
 

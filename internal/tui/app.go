@@ -8,23 +8,25 @@ import (
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
 	"github.com/k1empka/dotfiles/internal/chezmoi"
+	"github.com/k1empka/dotfiles/internal/installer"
 	"github.com/k1empka/dotfiles/internal/tui/component"
 	"github.com/k1empka/dotfiles/internal/tui/panel"
 )
 
 // App is the root model that orchestrates tabs and panels.
 type App struct {
-	client *chezmoi.Client
-	tabs   tabBar
-	panels []panel.Panel
-	help   component.Help
-	width  int
-	height int
-	err    error
+	client    *chezmoi.Client
+	installer *installer.Installer
+	tabs      tabBar
+	panels    []panel.Panel
+	help      component.Help
+	width     int
+	height    int
+	err       error
 }
 
 // NewApp creates a new App with all panels.
-func NewApp(client *chezmoi.Client) App {
+func NewApp(client *chezmoi.Client, inst *installer.Installer) App {
 	panels := []panel.Panel{
 		panel.NewOverview(),
 		panel.NewShell(),
@@ -33,16 +35,18 @@ func NewApp(client *chezmoi.Client) App {
 		panel.NewNeovim(),
 		panel.NewAlacritty(),
 		panel.NewChezmoi(),
+		panel.NewInstall(),
 	}
 	titles := make([]string, len(panels))
 	for i, p := range panels {
 		titles[i] = p.Title()
 	}
 	return App{
-		client: client,
-		tabs:   newTabBar(titles),
-		panels: panels,
-		help:   component.NewHelp(),
+		client:    client,
+		installer: inst,
+		tabs:      newTabBar(titles),
+		panels:    panels,
+		help:      component.NewHelp(),
 	}
 }
 
@@ -56,6 +60,7 @@ func (a App) Init() tea.Cmd {
 		a.loadThemeColors("rose-pine"),
 		a.loadThemeColors("catppuccin"),
 		a.loadThemeColors("tokyo-night"),
+		a.checkInstallStatus(),
 	)
 }
 
@@ -113,6 +118,9 @@ func (a App) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		case key.Matches(msg, globalKeys.Tab7):
 			a.tabs.setActive(6)
 			return a, nil
+		case key.Matches(msg, globalKeys.Tab8):
+			a.tabs.setActive(7)
+			return a, nil
 		}
 
 	case tea.WindowSizeMsg:
@@ -164,10 +172,18 @@ func (a App) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	case panel.NvimFileSelectMsg:
 		return a, a.loadNvimFileContent(msg.Path)
 
-	// Results from async chezmoi operations.
+	// Panel -> App messages that require installer operations.
+	case panel.InstallRequestMsg:
+		return a, a.installApp(msg.App)
+
+	case panel.CheckInstallMsg:
+		return a, a.checkInstallStatus()
+
+	// Results from async operations — broadcast to all panels.
 	case panel.ShellContentMsg, panel.GitContentMsg, panel.AlacrittyContentMsg,
 		panel.NvimFilesMsg, panel.NvimContentMsg, panel.ThemeColorsMsg,
-		panel.ChezmoiOutputMsg, panel.ConfigUpdatedMsg:
+		panel.ChezmoiOutputMsg, panel.ConfigUpdatedMsg,
+		panel.InstallStatusMsg, panel.InstallResultMsg:
 		for i, p := range a.panels {
 			updated, cmd := p.Update(msg)
 			a.panels[i] = updated.(panel.Panel)
@@ -349,6 +365,26 @@ func (a App) writeConfigAndReload(values map[string]string) tea.Cmd {
 			return panel.ConfigUpdatedMsg{Err: err}
 		}
 		return panel.ConfigUpdatedMsg{Err: nil}
+	}
+}
+
+func (a App) checkInstallStatus() tea.Cmd {
+	return func() tea.Msg {
+		if a.installer == nil {
+			return panel.InstallStatusMsg{Statuses: nil}
+		}
+		statuses := a.installer.CheckAll()
+		return panel.InstallStatusMsg{Statuses: statuses}
+	}
+}
+
+func (a App) installApp(app installer.App) tea.Cmd {
+	return func() tea.Msg {
+		if a.installer == nil {
+			return panel.InstallResultMsg{App: app, Err: fmt.Errorf("installer not initialized")}
+		}
+		err := a.installer.Install(app)
+		return panel.InstallResultMsg{App: app, Err: err}
 	}
 }
 

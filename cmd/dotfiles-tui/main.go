@@ -6,6 +6,7 @@ import (
 
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/k1empka/dotfiles/internal/chezmoi"
+	"github.com/k1empka/dotfiles/internal/installer"
 	"github.com/k1empka/dotfiles/internal/tui"
 )
 
@@ -16,7 +17,9 @@ func main() {
 		os.Exit(1)
 	}
 
-	p := tea.NewProgram(tui.NewApp(client), tea.WithAltScreen())
+	inst := installer.NewInstaller(installer.ExecRunner{}, "")
+
+	p := tea.NewProgram(tui.NewApp(client, inst), tea.WithAltScreen())
 	if _, err := p.Run(); err != nil {
 		fmt.Fprintf(os.Stderr, "error: %v\n", err)
 		os.Exit(1)

@@ -1,5 +1,7 @@
 package panel
 
+import "github.com/k1empka/dotfiles/internal/installer"
+
 // SetSizeMsg is sent to panels when available content area changes.
 type SetSizeMsg struct {
 	Width  int
@@ -69,3 +71,22 @@ type ThemeApplyMsg struct {
 type RunChezmoiMsg struct {
 	Mode string // "status", "diff", "apply"
 }
+
+// InstallStatusMsg carries the check results for all apps.
+type InstallStatusMsg struct {
+	Statuses []installer.AppStatus
+}
+
+// InstallRequestMsg signals the app to install a specific application.
+type InstallRequestMsg struct {
+	App installer.App
+}
+
+// InstallResultMsg carries the result of an install attempt.
+type InstallResultMsg struct {
+	App installer.App
+	Err error
+}
+
+// CheckInstallMsg signals the app to re-check install status.
+type CheckInstallMsg struct{}

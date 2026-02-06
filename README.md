@@ -49,6 +49,10 @@ make build
 ./bin/dotfiles-tui
 ```
 
+Tabs: Overview, Shell, Git, Themes, Neovim, Alacritty, Chezmoi, Install
+
+The **Install** tab detects which applications are installed and supports one-click installation via Homebrew (macOS) or apt (Linux).
+
 ## Configuration
 
 During `chezmoi init`, you'll be prompted for:
@@ -85,7 +89,8 @@ dotfiles/
 ├── cmd/dotfiles-tui/       # Go TUI entry point
 ├── internal/
 │   ├── tui/                # TUI components (bubbletea)
-│   └── chezmoi/            # chezmoi CLI wrapper
+│   ├── chezmoi/            # chezmoi CLI wrapper
+│   └── installer/          # application installer (brew/apt)
 ├── home/                   # chezmoi source directory
 │   ├── .chezmoi.toml.tmpl  # chezmoi config template
 │   ├── .chezmoiignore      # OS-conditional ignore rules
@@ -108,7 +113,7 @@ dotfiles/
 - [chezmoi](https://www.chezmoi.io/install/)
 - [oh-my-posh](https://ohmyposh.dev/docs/installation/linux)
 - A [Nerd Font](https://www.nerdfonts.com/) (e.g., JetBrainsMono Nerd Font)
-- Go 1.22+ (only for building the TUI)
+- Go 1.24+ (only for building the TUI)
 
 ## Development
 
