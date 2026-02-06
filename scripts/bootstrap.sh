@@ -93,6 +93,17 @@ _install_git_impl() {
 
 install_zsh() {
     install_if_missing zsh "ZSH" _install_zsh_impl
+
+    # Set ZSH as default shell if it isn't already.
+    ZSH_PATH="$(command -v zsh 2>/dev/null || true)"
+    if [ -n "$ZSH_PATH" ] && [ "$SHELL" != "$ZSH_PATH" ]; then
+        echo "==> Setting ZSH as default shell..."
+        # Ensure zsh is in /etc/shells.
+        if ! grep -qx "$ZSH_PATH" /etc/shells 2>/dev/null; then
+            echo "$ZSH_PATH" | sudo tee -a /etc/shells >/dev/null
+        fi
+        chsh -s "$ZSH_PATH"
+    fi
 }
 
 _install_zsh_impl() {
