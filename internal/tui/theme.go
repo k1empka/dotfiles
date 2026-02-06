@@ -10,11 +10,8 @@ var (
 	colorMuted   = lipgloss.Color("#6e6a86")
 	colorSubtle  = lipgloss.Color("#908caa")
 	colorText    = lipgloss.Color("#e0def4")
-	colorLove    = lipgloss.Color("#eb6f92")
-	colorGold    = lipgloss.Color("#f6c177")
-	colorFoam    = lipgloss.Color("#9ccfd8")
-	colorIris    = lipgloss.Color("#c4a7e7")
-	_            = lipgloss.Color("#403d52") // highlight, reserved
+	colorLove = lipgloss.Color("#eb6f92")
+	colorFoam = lipgloss.Color("#9ccfd8")
 )
 
 // Shared styles used across the TUI.
@@ -39,8 +36,3 @@ var (
 			Foreground(colorLove)
 )
 
-// Suppress unused warnings for palette colors available to panels/components.
-var (
-	_ = colorGold
-	_ = colorIris
-)

@@ -10,11 +10,6 @@ type ConfigLoadedMsg struct {
 	Err     error
 }
 
-// ConfigUpdatedMsg signals that chezmoi config was written and applied.
-type ConfigUpdatedMsg struct {
-	Err error
-}
-
 // ErrorMsg is a generic error message.
 type ErrorMsg struct {
 	Err error
