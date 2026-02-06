@@ -5,11 +5,18 @@ import (
 	"os"
 
 	tea "github.com/charmbracelet/bubbletea"
+	"github.com/k1empka/dotfiles/internal/chezmoi"
 	"github.com/k1empka/dotfiles/internal/tui"
 )
 
 func main() {
-	p := tea.NewProgram(tui.NewApp(), tea.WithAltScreen())
+	client, err := chezmoi.NewClient()
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "error: %v\n", err)
+		os.Exit(1)
+	}
+
+	p := tea.NewProgram(tui.NewApp(client), tea.WithAltScreen())
 	if _, err := p.Run(); err != nil {
 		fmt.Fprintf(os.Stderr, "error: %v\n", err)
 		os.Exit(1)
